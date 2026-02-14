@@ -3,219 +3,185 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Video Player with Animations</title>
+  <title>Aesthetic FX 13 Player</title>
   <style>
-    body {
-      margin: 0;
-      height: 100vh;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      background: #000;
-      overflow: hidden;
-      color: #fff;
+    :root { --accent: #00f2ff; --pulse: 1; --glow: 0px; --bass: 0; }
+    body { margin: 0; height: 100vh; display: flex; justify-content: center; align-items: center; background: #000; overflow: hidden; font-family: 'Inter', sans-serif; color: #fff; }
+
+    /* --- GLOBAL ENGINE --- */
+    .fx-canvas { position: absolute; inset: 0; z-index: -1; transform: scale(calc(1 + (var(--bass) * 0.05))); filter: brightness(calc(0.8 + var(--bass))); transition: transform 0.1s linear; }
+    .layer { position: absolute; inset: 0; display: none; overflow: hidden; pointer-events: none; }
+
+    /* 1. CHRONO-GRID */
+    #grid {
+      background: linear-gradient(transparent 0%, var(--accent) 1%, transparent 2%), linear-gradient(90deg, transparent 0%, var(--accent) 1%, transparent 2%);
+      background-size: 60px 60px; width: 400vw; height: 400vh; top: -100vh; left: -150vw;
+      transform: perspective(400px) rotateX(60deg); animation: drive 2s linear infinite; opacity: 0.4;
+    }
+    @keyframes drive { from { background-position: 0 0; } to { background-position: 0 60px; } }
+
+    /* 2. SAKURA DRIFT */
+    .petal { position: absolute; font-size: 24px; animation: sakuraMove 5s linear forwards; filter: drop-shadow(0 0 5px #ffb7c5); }
+    @keyframes sakuraMove { 
+      0% { transform: translate(0, -10vh) rotate(0); opacity: 0; }
+      20% { opacity: 1; }
+      100% { transform: translate(100px, 110vh) rotate(720deg); opacity: 0; }
     }
 
-    .animation {
-      position: absolute;
-      width: 100%;
-      height: 100%;
-      top: 0;
-      left: 0;
-      z-index: -1;
-      display: none;
-    }
+    /* 3. DOMAIN EXPANSION (VOID) */
+    #void { background: radial-gradient(circle at center, #1a0033 0%, #000 70%); }
+    .void-ring { position: absolute; border: 2px solid #5500ff; border-radius: 50%; top: 50%; left: 50%; transform: translate(-50%, -50%); animation: ringExp 3s infinite linear; }
+    @keyframes ringExp { from { width: 0; height: 0; opacity: 1; border-width: 5px; } to { width: 150vw; height: 150vw; opacity: 0; border-width: 1px; } }
 
-    /* Gradient Waves */
-    .gradient {
-      background: linear-gradient(-45deg, #ff004d, #004dff, #00ff99, #ffff00);
-      background-size: 400% 400%;
-      animation: gradientBG 10s ease infinite;
-    }
-    @keyframes gradientBG {
-      0% { background-position: 0% 50%; }
-      50% { background-position: 100% 50%; }
-      100% { background-position: 0% 50%; }
-    }
+    /* 4. CYBER-RAIN */
+    .rain-trail { position: absolute; width: 2px; height: 150px; background: linear-gradient(transparent, var(--accent)); animation: fall 1s linear forwards; }
 
-    /* Skyfall Stars */
-    .star {
-      position: absolute;
-      width: 10px;
-      height: 10px;
-      border-radius: 50%;
-      opacity: 1;
-      box-shadow: 0 0 20px currentColor, 0 0 40px currentColor, 0 0 60px currentColor;
-      animation: fall linear infinite;
-    }
-    @keyframes fall {
-      0% { transform: translateY(-20px); opacity: 1; }
-      100% { transform: translateY(100vh); opacity: 0.8; }
-    }
+    /* 5. NEBULA (Aesthetic Liquid) */
+    #nebula { background: linear-gradient(45deg, #7000ff, #00f2ff, #ff0070); filter: blur(100px); opacity: 0.3; transform: scale(1.5) rotate(calc(var(--bass) * 10deg)); }
 
-    /* Bubbles */
-    .bubble {
-      position: absolute;
-      width: 20px;
-      height: 20px;
-      border-radius: 50%;
-      background: rgba(255,255,255,0.5);
-      animation: rise linear infinite;
-    }
-    @keyframes rise {
-      0% { transform: translateY(100vh) scale(0.5); opacity: 0.7; }
-      100% { transform: translateY(-20px) scale(1.2); opacity: 0; }
-    }
+    /* 6. QUANTUM HEX */
+    .hex { position: absolute; border: 1.5px solid var(--accent); background: rgba(0,242,255,0.05); clip-path: polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%); animation: floatUp 8s linear forwards; backdrop-filter: blur(2px); }
 
-    /* Snowflakes */
-    .snowflake {
-      position: absolute;
-      font-size: 20px;
-      color: #fff;
-      animation: snow linear infinite;
-    }
-    @keyframes snow {
-      0% { transform: translateY(-20px); opacity: 1; }
-      100% { transform: translateY(100vh); opacity: 0.8; }
-    }
+    /* 7. ELECTRIC STORM */
+    .lightning { position: absolute; background: #fff; box-shadow: 0 0 20px #00f2ff; animation: flash 0.1s linear; }
 
-    .player {
-      width: 80vw;
-      max-width: 960px;
-      aspect-ratio: 16 / 9;
-      background: #222;
-      border-radius: 12px;
-      overflow: hidden;
-      box-shadow: 0 0 30px rgba(0,0,0,0.6);
-      display: flex;
-      flex-direction: column;
-      z-index: 1;
-    }
+    /* 8. STARDUST */
+    .dust { position: absolute; background: #fff; border-radius: 50%; box-shadow: 0 0 10px #fff; animation: fall 3s linear forwards; }
 
-    video { width: 100%; height: 100%; display: block; }
+    /* 9. DEEP SEA BUBBLES */
+    .bubble { position: absolute; border: 1px solid rgba(255,255,255,0.4); border-radius: 50%; animation: rise 4s ease-in forwards; }
 
-    .controls {
-      display: flex;
-      justify-content: space-around;
-      align-items: center;
-      padding: 10px;
-      background: rgba(0,0,0,0.7);
-    }
+    /* 10. FIREFLIES */
+    .firefly { position: absolute; width: 6px; height: 6px; background: #ffea00; border-radius: 50%; filter: blur(2px); box-shadow: 0 0 15px #ffea00; animation: wander 4s infinite alternate; }
 
-    button, select {
-      background: #444;
-      border: none;
-      color: #fff;
-      padding: 8px 12px;
-      border-radius: 4px;
-      cursor: pointer;
-      transition: transform 0.2s ease, background 0.3s ease;
-    }
-    button:hover, select:hover { background: #666; transform: scale(1.05); }
+    /* 11. GLITCH */
+    #glitch { background: repeating-linear-gradient(0deg, rgba(255,255,255,0.05) 0px, transparent 2px); animation: shake 0.1s infinite; }
+
+    /* 12. BINARY */
+    .bin { position: absolute; color: #0f0; font-family: monospace; font-size: 14px; text-shadow: 0 0 5px #0f0; animation: fall 2s linear forwards; }
+
+    /* 13. SAIYAN AURA */
+    .flame { position: absolute; bottom: 0; width: 40px; height: 100px; background: linear-gradient(0deg, var(--accent), transparent); filter: blur(10px); animation: rise 1s linear forwards; }
+
+    /* SHARED ANIMATIONS */
+    @keyframes fall { to { transform: translateY(110vh); } }
+    @keyframes rise { to { transform: translateY(-110vh); } }
+    @keyframes flash { from { opacity: 1; height: 100vh; width: 2px; } to { opacity: 0; height: 100vh; width: 10px; } }
+    @keyframes floatUp { from { transform: translateY(110vh) rotate(0deg); } to { transform: translateY(-20vh) rotate(360deg); } }
+    @keyframes wander { from { transform: translate(0, 0); } to { transform: translate(100px, -100px); } }
+    @keyframes shake { from { transform: translateX(-5px); } to { transform: translateX(5px); } }
+
+    /* --- PLAYER (16:9) --- */
+    .player-wrap { width: 85vw; max-width: 960px; aspect-ratio: 16/9; background: #000; border-radius: 20px; overflow: hidden; border: 1px solid rgba(255,255,255,0.1); box-shadow: 0 40px 100px #000; z-index: 10; display: flex; flex-direction: column; }
+    video { flex: 1; width: 100%; height: 100%; }
+    .controls { display: grid; grid-template-columns: repeat(3, 1fr); padding: 15px; background: rgba(15,15,15,0.9); backdrop-filter: blur(20px); gap: 10px; }
+    button, select { background: #222; border: 1px solid #333; color: var(--accent); padding: 12px; border-radius: 8px; cursor: pointer; font-size: 11px; text-transform: uppercase; font-weight: bold; transition: 0.3s; }
+    button:hover { background: var(--accent); color: #000; }
   </style>
 </head>
 <body>
-  <!-- Animation layers -->
-  <div class="animation gradient" id="gradient"></div>
-  <div class="animation" id="skyfall"></div>
-  <div class="animation" id="bubbles"></div>
-  <div class="animation" id="snow"></div>
 
-  <div class="player">
-    <video id="video" controls>
-      <source src="sample.mp4" type="video/mp4">
-      <track src="subtitles.vtt" kind="subtitles" srclang="en" label="English">
-    </video>
+  <div class="fx-canvas" id="canvas">
+    <div class="layer" id="grid"></div>
+    <div class="layer" id="sakura"></div>
+    <div class="layer" id="void"></div>
+    <div class="layer" id="rain"></div>
+    <div class="layer" id="nebula"></div>
+    <div class="layer" id="hex"></div>
+    <div class="layer" id="storm"></div>
+    <div class="layer" id="stars"></div>
+    <div class="layer" id="sea"></div>
+    <div class="layer" id="flies"></div>
+    <div class="layer" id="glitch"></div>
+    <div class="layer" id="binary"></div>
+    <div class="layer" id="aura"></div>
+  </div>
+
+  <div class="player-wrap">
+    <video id="v" src="https://www.w3schools.com" crossorigin="anonymous"></video>
     <div class="controls">
-      <button id="playPause">Play/Pause</button>
-      <button id="subtitles">Subtitles</button>
-      <button id="fullscreen">Fullscreen</button>
-      <select id="animationSelect">
-        <option value="gradient">Gradient Waves</option>
-        <option value="skyfall">Skyfall Stars</option>
-        <option value="bubbles">Floating Bubbles</option>
-        <option value="snow">Snowfall</option>
+      <button onclick="startAudio(); v.paused ? v.play() : v.pause()">Play / Pause</button>
+      <button onclick="v.requestFullscreen()">Full View</button>
+      <select onchange="setFX(this.value)">
+        <option value="">-- Mode: Off --</option>
+        <option value="grid">1. Chrono-Grid</option>
+        <option value="sakura">2. Sakura Drift</option>
+        <option value="void">3. Domain Expansion</option>
+        <option value="rain">4. Cyber-Rain</option>
+        <option value="nebula">5. Prismatic Nebula</option>
+        <option value="hex">6. Quantum Hex</option>
+        <option value="storm">7. Electric Storm</option>
+        <option value="stars">8. Stardust Fall</option>
+        <option value="sea">9. Deep Sea Bubbles</option>
+        <option value="flies">10. Firefly Forest</option>
+        <option value="glitch">11. Glitch Reality</option>
+        <option value="binary">12. Binary Flow</option>
+        <option value="aura">13. Saiyan Aura</option>
       </select>
     </div>
   </div>
 
   <script>
-    const video = document.getElementById('video');
-    document.getElementById('playPause').onclick = () => video.paused ? video.play() : video.pause();
-    document.getElementById('subtitles').onclick = () => {
-      const track = video.textTracks[0];
-      track.mode = track.mode === "showing" ? "hidden" : "showing";
-    };
-    document.getElementById('fullscreen').onclick = () => {
-      !document.fullscreenElement ? video.requestFullscreen() : document.exitFullscreen();
-    };
+    const v = document.getElementById('v');
+    const layers = document.querySelectorAll('.layer');
+    let aCtx, analyzer, data, source, loops = [];
 
-    const animations = {
-      gradient: document.getElementById('gradient'),
-      skyfall: document.getElementById('skyfall'),
-      bubbles: document.getElementById('bubbles'),
-      snow: document.getElementById('snow')
-    };
-
-    let intervals = [];
-
-    function clearIntervals() {
-      intervals.forEach(i => clearInterval(i));
-      intervals = [];
-      Object.values(animations).forEach(el => el.innerHTML = "");
+    function startAudio() {
+      if (aCtx) return;
+      aCtx = new (window.AudioContext || window.webkitAudioContext)();
+      analyzer = aCtx.createAnalyser();
+      source = aCtx.createMediaElementSource(v);
+      source.connect(analyzer);
+      analyzer.connect(aCtx.destination);
+      analyzer.fftSize = 64;
+      data = new Uint8Array(analyzer.frequencyBinCount);
+      tick();
     }
 
-    function showAnimation(name) {
-      Object.values(animations).forEach(el => el.style.display = "none");
-      clearIntervals();
-      animations[name].style.display = "block";
-      if (name === "skyfall") startSkyfall();
-      if (name === "bubbles") startBubbles();
-      if (name === "snow") startSnow();
+    function tick() {
+      requestAnimationFrame(tick);
+      analyzer.getByteFrequencyData(data);
+      const bass = data[1] / 255; // Low-end frequency
+      document.documentElement.style.setProperty('--bass', bass);
     }
 
-    function startSkyfall() {
-      const colors = ["#ff0000","#00ff00","#00ffff","#ffff00","#ff00ff","#ffffff"];
-      intervals.push(setInterval(() => {
-        const star = document.createElement('div');
-        star.classList.add('star');
-        star.style.left = Math.random() * window.innerWidth + 'px';
-        star.style.color = colors[Math.floor(Math.random()*colors.length)];
-        star.style.animationDuration = (Math.random()*2+1.5)+'s';
-        animations.skyfall.appendChild(star);
-        setTimeout(()=>star.remove(),4000);
-      },100));
+    function setFX(id) {
+      loops.forEach(clearInterval);
+      loops = [];
+      layers.forEach(l => { l.style.display = 'none'; l.innerHTML = ''; });
+      if(!id) return;
+      const el = document.getElementById(id);
+      el.style.display = 'block';
+
+      const spawn = (html, delay, container) => {
+        loops.push(setInterval(() => {
+          const div = document.createElement('div');
+          div.innerHTML = html;
+          const child = div.firstChild;
+          child.style.left = Math.random() * 100 + 'vw';
+          container.appendChild(child);
+          setTimeout(() => child.remove(), 5000);
+        }, delay));
+      };
+
+      if(id === 'sakura') spawn('<div class="petal">🌸</div>', 200, el);
+      if(id === 'rain') spawn('<div class="rain-trail"></div>', 50, el);
+      if(id === 'void') spawn('<div class="void-ring"></div>', 600, el);
+      if(id === 'stars') spawn('<div class="dust" style="width:4px;height:4px;"></div>', 80, el);
+      if(id === 'sea') spawn('<div class="bubble" style="width:20px;height:20px;bottom:-20px;"></div>', 300, el);
+      if(id === 'binary') spawn(`<div class="bin">${Math.round(Math.random())}</div>`, 100, el);
+      if(id === 'aura') spawn('<div class="flame"></div>', 50, el);
+      if(id === 'storm') spawn('<div class="lightning"></div>', 400, el);
+      if(id === 'hex') spawn('<div class="hex" style="width:60px;height:60px;"></div>', 500, el);
+      if(id === 'flies') {
+        for(let i=0; i<30; i++) {
+          const f = document.createElement('div');
+          f.className = 'firefly';
+          f.style.left = Math.random()*100+'vw'; f.style.top = Math.random()*100+'vh';
+          el.appendChild(f);
+        }
+      }
     }
-
-    function startBubbles() {
-      intervals.push(setInterval(() => {
-        const bubble = document.createElement('div');
-        bubble.classList.add('bubble');
-        bubble.style.left = Math.random() * window.innerWidth + 'px';
-        bubble.style.animationDuration = (Math.random()*5+3)+'s';
-        animations.bubbles.appendChild(bubble);
-        setTimeout(()=>bubble.remove(),8000);
-      },300));
-    }
-
-    function startSnow() {
-      intervals.push(setInterval(() => {
-        const snowflake = document.createElement('div');
-        snowflake.classList.add('snowflake');
-        snowflake.textContent = "❄";
-        snowflake.style.left = Math.random() * window.innerWidth + 'px';
-        snowflake.style.animationDuration = (Math.random()*3+2)+'s';
-        animations.snow.appendChild(snowflake);
-        setTimeout(()=>snowflake.remove(),5000);
-      },200));
-    }
-
-    document.getElementById('animationSelect').addEventListener('change', (e) => {
-      showAnimation(e.target.value);
-    });
-
-    // Default animation
-    showAnimation('gradient');
   </script>
 </body>
 </html>
