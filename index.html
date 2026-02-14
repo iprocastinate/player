@@ -53,7 +53,7 @@
       100% { transform: translateY(100vh); opacity: 0.8; }
     }
 
-    /* Floating Bubbles */
+    /* Bubbles */
     .bubble {
       position: absolute;
       width: 20px;
@@ -67,34 +67,6 @@
       100% { transform: translateY(-20px) scale(1.2); opacity: 0; }
     }
 
-    /* Matrix Rain */
-    .matrixChar {
-      position: absolute;
-      font-family: monospace;
-      color: #0f0;
-      font-size: 16px;
-      animation: matrixFall linear infinite;
-    }
-    @keyframes matrixFall {
-      0% { transform: translateY(-20px); opacity: 1; }
-      100% { transform: translateY(100vh); opacity: 0; }
-    }
-
-    /* Fireflies */
-    .firefly {
-      position: absolute;
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      background: yellow;
-      box-shadow: 0 0 20px yellow;
-      animation: flicker 2s infinite alternate;
-    }
-    @keyframes flicker {
-      from { opacity: 0.2; transform: scale(0.8); }
-      to { opacity: 1; transform: scale(1.2); }
-    }
-
     /* Snowflakes */
     .snowflake {
       position: absolute;
@@ -105,29 +77,6 @@
     @keyframes snow {
       0% { transform: translateY(-20px); opacity: 1; }
       100% { transform: translateY(100vh); opacity: 0.8; }
-    }
-
-    /* Confetti */
-    .confetti {
-      position: absolute;
-      width: 10px;
-      height: 20px;
-      background: red;
-      animation: confettiFall linear infinite;
-    }
-    @keyframes confettiFall {
-      0% { transform: translateY(-20px) rotate(0deg); opacity: 1; }
-      100% { transform: translateY(100vh) rotate(360deg); opacity: 0.8; }
-    }
-
-    /* Aurora Glow */
-    .aurora {
-      background: radial-gradient(circle at 50% 50%, rgba(0,255,255,0.3), transparent 70%);
-      animation: auroraMove 8s ease infinite alternate;
-    }
-    @keyframes auroraMove {
-      from { transform: translateX(-20%) scale(1); }
-      to { transform: translateX(20%) scale(1.2); }
     }
 
     .player {
@@ -170,11 +119,7 @@
   <div class="animation gradient" id="gradient"></div>
   <div class="animation" id="skyfall"></div>
   <div class="animation" id="bubbles"></div>
-  <div class="animation" id="matrix"></div>
-  <div class="animation" id="fireflies"></div>
   <div class="animation" id="snow"></div>
-  <div class="animation" id="confetti"></div>
-  <div class="animation aurora" id="aurora"></div>
 
   <div class="player">
     <video id="video" controls>
@@ -189,11 +134,7 @@
         <option value="gradient">Gradient Waves</option>
         <option value="skyfall">Skyfall Stars</option>
         <option value="bubbles">Floating Bubbles</option>
-        <option value="matrix">Matrix Rain</option>
-        <option value="fireflies">Fireflies</option>
         <option value="snow">Snowfall</option>
-        <option value="confetti">Confetti</option>
-        <option value="aurora">Aurora Glow</option>
       </select>
     </div>
   </div>
@@ -213,11 +154,7 @@
       gradient: document.getElementById('gradient'),
       skyfall: document.getElementById('skyfall'),
       bubbles: document.getElementById('bubbles'),
-      matrix: document.getElementById('matrix'),
-      fireflies: document.getElementById('fireflies'),
-      snow: document.getElementById('snow'),
-      confetti: document.getElementById('confetti'),
-      aurora: document.getElementById('aurora')
+      snow: document.getElementById('snow')
     };
 
     let intervals = [];
@@ -225,7 +162,6 @@
     function clearIntervals() {
       intervals.forEach(i => clearInterval(i));
       intervals = [];
-      // clear children
       Object.values(animations).forEach(el => el.innerHTML = "");
     }
 
@@ -233,9 +169,53 @@
       Object.values(animations).forEach(el => el.style.display = "none");
       clearIntervals();
       animations[name].style.display = "block";
+      if (name === "skyfall") startSkyfall();
+      if (name === "bubbles") startBubbles();
+      if (name === "snow") startSnow();
     }
 
-    // Generators
     function startSkyfall() {
       const colors = ["#ff0000","#00ff00","#00ffff","#ffff00","#ff00ff","#ffffff"];
       intervals.push(setInterval(() => {
+        const star = document.createElement('div');
+        star.classList.add('star');
+        star.style.left = Math.random() * window.innerWidth + 'px';
+        star.style.color = colors[Math.floor(Math.random()*colors.length)];
+        star.style.animationDuration = (Math.random()*2+1.5)+'s';
+        animations.skyfall.appendChild(star);
+        setTimeout(()=>star.remove(),4000);
+      },100));
+    }
+
+    function startBubbles() {
+      intervals.push(setInterval(() => {
+        const bubble = document.createElement('div');
+        bubble.classList.add('bubble');
+        bubble.style.left = Math.random() * window.innerWidth + 'px';
+        bubble.style.animationDuration = (Math.random()*5+3)+'s';
+        animations.bubbles.appendChild(bubble);
+        setTimeout(()=>bubble.remove(),8000);
+      },300));
+    }
+
+    function startSnow() {
+      intervals.push(setInterval(() => {
+        const snowflake = document.createElement('div');
+        snowflake.classList.add('snowflake');
+        snowflake.textContent = "❄";
+        snowflake.style.left = Math.random() * window.innerWidth + 'px';
+        snowflake.style.animationDuration = (Math.random()*3+2)+'s';
+        animations.snow.appendChild(snowflake);
+        setTimeout(()=>snowflake.remove(),5000);
+      },200));
+    }
+
+    document.getElementById('animationSelect').addEventListener('change', (e) => {
+      showAnimation(e.target.value);
+    });
+
+    // Default animation
+    showAnimation('gradient');
+  </script>
+</body>
+</html>
