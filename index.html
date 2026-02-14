@@ -16,7 +16,7 @@
       color: #fff;
     }
 
-    /* Skyfall particles */
+    /* Skyfall particles container */
     .skyfall {
       position: absolute;
       width: 100%;
@@ -29,10 +29,11 @@
 
     .star {
       position: absolute;
-      width: 2px;
-      height: 10px;
-      background: rgba(255,255,255,0.8);
+      width: 6px;
+      height: 6px;
       border-radius: 50%;
+      opacity: 0.8;
+      box-shadow: 0 0 10px currentColor, 0 0 20px currentColor;
       animation: fall linear infinite;
     }
 
@@ -156,10 +157,13 @@
 
     // Skyfall effect generator
     const skyfallContainer = document.getElementById('skyfall');
+    const colors = ["#ff4d4d", "#4dff4d", "#4d4dff", "#ffff4d", "#ff4dff", "#4dffff"];
+
     function createStar() {
       const star = document.createElement('div');
       star.classList.add('star');
       star.style.left = Math.random() * window.innerWidth + 'px';
+      star.style.color = colors[Math.floor(Math.random() * colors.length)];
       star.style.animationDuration = (Math.random() * 3 + 2) + 's';
       skyfallContainer.appendChild(star);
 
@@ -168,7 +172,7 @@
       }, 5000);
     }
 
-    setInterval(createStar, 200); // Create a new star every 200ms
+    setInterval(createStar, 150); // Create a new star every 150ms
   </script>
 </body>
 </html>
