@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Mini Telegram Video Player</title>
+  <title>Video Player with Animations</title>
   <style>
     body {
       margin: 0;
@@ -11,47 +11,129 @@
       display: flex;
       justify-content: center;
       align-items: center;
-      background: #000; /* Dark sky background */
+      background: #000;
       overflow: hidden;
       color: #fff;
     }
 
-    /* Skyfall particles container */
-    .skyfall {
+    .animation {
       position: absolute;
       width: 100%;
       height: 100%;
       top: 0;
       left: 0;
-      overflow: hidden;
       z-index: -1;
+      display: none;
     }
 
+    /* Gradient Waves */
+    .gradient {
+      background: linear-gradient(-45deg, #ff004d, #004dff, #00ff99, #ffff00);
+      background-size: 400% 400%;
+      animation: gradientBG 10s ease infinite;
+    }
+    @keyframes gradientBG {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    /* Skyfall Stars */
     .star {
       position: absolute;
-      width: 6px;
-      height: 6px;
+      width: 10px;
+      height: 10px;
       border-radius: 50%;
-      opacity: 0.8;
-      box-shadow: 0 0 10px currentColor, 0 0 20px currentColor;
+      opacity: 1;
+      box-shadow: 0 0 20px currentColor, 0 0 40px currentColor, 0 0 60px currentColor;
       animation: fall linear infinite;
     }
-
     @keyframes fall {
-      0% {
-        transform: translateY(-10px);
-        opacity: 1;
-      }
-      100% {
-        transform: translateY(100vh);
-        opacity: 0;
-      }
+      0% { transform: translateY(-20px); opacity: 1; }
+      100% { transform: translateY(100vh); opacity: 0.8; }
+    }
+
+    /* Floating Bubbles */
+    .bubble {
+      position: absolute;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.5);
+      animation: rise linear infinite;
+    }
+    @keyframes rise {
+      0% { transform: translateY(100vh) scale(0.5); opacity: 0.7; }
+      100% { transform: translateY(-20px) scale(1.2); opacity: 0; }
+    }
+
+    /* Matrix Rain */
+    .matrixChar {
+      position: absolute;
+      font-family: monospace;
+      color: #0f0;
+      font-size: 16px;
+      animation: matrixFall linear infinite;
+    }
+    @keyframes matrixFall {
+      0% { transform: translateY(-20px); opacity: 1; }
+      100% { transform: translateY(100vh); opacity: 0; }
+    }
+
+    /* Fireflies */
+    .firefly {
+      position: absolute;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: yellow;
+      box-shadow: 0 0 20px yellow;
+      animation: flicker 2s infinite alternate;
+    }
+    @keyframes flicker {
+      from { opacity: 0.2; transform: scale(0.8); }
+      to { opacity: 1; transform: scale(1.2); }
+    }
+
+    /* Snowflakes */
+    .snowflake {
+      position: absolute;
+      font-size: 20px;
+      color: #fff;
+      animation: snow linear infinite;
+    }
+    @keyframes snow {
+      0% { transform: translateY(-20px); opacity: 1; }
+      100% { transform: translateY(100vh); opacity: 0.8; }
+    }
+
+    /* Confetti */
+    .confetti {
+      position: absolute;
+      width: 10px;
+      height: 20px;
+      background: red;
+      animation: confettiFall linear infinite;
+    }
+    @keyframes confettiFall {
+      0% { transform: translateY(-20px) rotate(0deg); opacity: 1; }
+      100% { transform: translateY(100vh) rotate(360deg); opacity: 0.8; }
+    }
+
+    /* Aurora Glow */
+    .aurora {
+      background: radial-gradient(circle at 50% 50%, rgba(0,255,255,0.3), transparent 70%);
+      animation: auroraMove 8s ease infinite alternate;
+    }
+    @keyframes auroraMove {
+      from { transform: translateX(-20%) scale(1); }
+      to { transform: translateX(20%) scale(1.2); }
     }
 
     .player {
       width: 80vw;
       max-width: 960px;
-      aspect-ratio: 16 / 9; /* Ensures 16:9 format */
+      aspect-ratio: 16 / 9;
       background: #222;
       border-radius: 12px;
       overflow: hidden;
@@ -61,11 +143,7 @@
       z-index: 1;
     }
 
-    video {
-      width: 100%;
-      height: 100%;
-      display: block;
-    }
+    video { width: 100%; height: 100%; display: block; }
 
     .controls {
       display: flex;
@@ -75,7 +153,7 @@
       background: rgba(0,0,0,0.7);
     }
 
-    button {
+    button, select {
       background: #444;
       border: none;
       color: #fff;
@@ -84,95 +162,80 @@
       cursor: pointer;
       transition: transform 0.2s ease, background 0.3s ease;
     }
-
-    button:hover {
-      background: #666;
-      transform: scale(1.1);
-    }
+    button:hover, select:hover { background: #666; transform: scale(1.05); }
   </style>
 </head>
 <body>
-  <!-- Skyfall background -->
-  <div class="skyfall" id="skyfall"></div>
+  <!-- Animation layers -->
+  <div class="animation gradient" id="gradient"></div>
+  <div class="animation" id="skyfall"></div>
+  <div class="animation" id="bubbles"></div>
+  <div class="animation" id="matrix"></div>
+  <div class="animation" id="fireflies"></div>
+  <div class="animation" id="snow"></div>
+  <div class="animation" id="confetti"></div>
+  <div class="animation aurora" id="aurora"></div>
 
   <div class="player">
     <video id="video" controls>
       <source src="sample.mp4" type="video/mp4">
       <track src="subtitles.vtt" kind="subtitles" srclang="en" label="English">
-      Your browser does not support the video tag.
     </video>
     <div class="controls">
       <button id="playPause">Play/Pause</button>
-      <button id="subtitles">Toggle Subtitles</button>
-      <button id="audio">Change Audio</button>
+      <button id="subtitles">Subtitles</button>
       <button id="fullscreen">Fullscreen</button>
-      <button id="settings">Settings</button>
+      <select id="animationSelect">
+        <option value="gradient">Gradient Waves</option>
+        <option value="skyfall">Skyfall Stars</option>
+        <option value="bubbles">Floating Bubbles</option>
+        <option value="matrix">Matrix Rain</option>
+        <option value="fireflies">Fireflies</option>
+        <option value="snow">Snowfall</option>
+        <option value="confetti">Confetti</option>
+        <option value="aurora">Aurora Glow</option>
+      </select>
     </div>
   </div>
 
   <script>
     const video = document.getElementById('video');
-    const playPauseBtn = document.getElementById('playPause');
-    const subtitlesBtn = document.getElementById('subtitles');
-    const audioBtn = document.getElementById('audio');
-    const fullscreenBtn = document.getElementById('fullscreen');
-
-    // Play/Pause
-    playPauseBtn.addEventListener('click', () => {
-      if (video.paused) {
-        video.play();
-      } else {
-        video.pause();
-      }
-    });
-
-    // Toggle Subtitles
-    subtitlesBtn.addEventListener('click', () => {
+    document.getElementById('playPause').onclick = () => video.paused ? video.play() : video.pause();
+    document.getElementById('subtitles').onclick = () => {
       const track = video.textTracks[0];
-      if (track.mode === "showing") {
-        track.mode = "hidden";
-      } else {
-        track.mode = "showing";
-      }
-    });
+      track.mode = track.mode === "showing" ? "hidden" : "showing";
+    };
+    document.getElementById('fullscreen').onclick = () => {
+      !document.fullscreenElement ? video.requestFullscreen() : document.exitFullscreen();
+    };
 
-    // Change Audio (example: cycle through audio tracks)
-    audioBtn.addEventListener('click', () => {
-      alert("Switching audio track (demo)");
-    });
+    const animations = {
+      gradient: document.getElementById('gradient'),
+      skyfall: document.getElementById('skyfall'),
+      bubbles: document.getElementById('bubbles'),
+      matrix: document.getElementById('matrix'),
+      fireflies: document.getElementById('fireflies'),
+      snow: document.getElementById('snow'),
+      confetti: document.getElementById('confetti'),
+      aurora: document.getElementById('aurora')
+    };
 
-    // Fullscreen
-    fullscreenBtn.addEventListener('click', () => {
-      if (!document.fullscreenElement) {
-        video.requestFullscreen();
-      } else {
-        document.exitFullscreen();
-      }
-    });
+    let intervals = [];
 
-    // Settings
-    document.getElementById('settings').addEventListener('click', () => {
-      alert("Settings menu (demo)");
-    });
-
-    // Skyfall effect generator
-    const skyfallContainer = document.getElementById('skyfall');
-    const colors = ["#ff4d4d", "#4dff4d", "#4d4dff", "#ffff4d", "#ff4dff", "#4dffff"];
-
-    function createStar() {
-      const star = document.createElement('div');
-      star.classList.add('star');
-      star.style.left = Math.random() * window.innerWidth + 'px';
-      star.style.color = colors[Math.floor(Math.random() * colors.length)];
-      star.style.animationDuration = (Math.random() * 3 + 2) + 's';
-      skyfallContainer.appendChild(star);
-
-      setTimeout(() => {
-        star.remove();
-      }, 5000);
+    function clearIntervals() {
+      intervals.forEach(i => clearInterval(i));
+      intervals = [];
+      // clear children
+      Object.values(animations).forEach(el => el.innerHTML = "");
     }
 
-    setInterval(createStar, 150); // Create a new star every 150ms
-  </script>
-</body>
-</html>
+    function showAnimation(name) {
+      Object.values(animations).forEach(el => el.style.display = "none");
+      clearIntervals();
+      animations[name].style.display = "block";
+    }
+
+    // Generators
+    function startSkyfall() {
+      const colors = ["#ff0000","#00ff00","#00ffff","#ffff00","#ff00ff","#ffffff"];
+      intervals.push(setInterval(() => {
