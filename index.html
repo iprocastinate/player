@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mini Telegram Video Player</title>
+  <style>
+    body {
+      background: #111;
+      color: #fff;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+    .player {
+      max-width: 800px;
+      width: 100%;
+      background: #222;
+      border-radius: 8px;
+      overflow: hidden;
+    }
+    video {
+      width: 100%;
+      display: block;
+    }
+    .controls {
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      padding: 10px;
+      background: #333;
+    }
+    button {
+      background: #444;
+      border: none;
+      color: #fff;
+      padding: 8px 12px;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #555;
+    }
+  </style>
+</head>
+<body>
+  <div class="player">
+    <video id="video" controls>
+      <source src="sample.mp4" type="video/mp4">
+      <track src="subtitles.vtt" kind="subtitles" srclang="en" label="English">
+      Your browser does not support the video tag.
+    </video>
+    <div class="controls">
+      <button id="playPause">Play/Pause</button>
+      <button id="subtitles">Toggle Subtitles</button>
+      <button id="audio">Change Audio</button>
+      <button id="fullscreen">Fullscreen</button>
+      <button id="settings">Settings</button>
+    </div>
+  </div>
+
+  <script>
+    const video = document.getElementById('video');
+    const playPauseBtn = document.getElementById('playPause');
+    const subtitlesBtn = document.getElementById('subtitles');
+    const audioBtn = document.getElementById('audio');
+    const fullscreenBtn = document.getElementById('fullscreen');
+
+    // Play/Pause
+    playPauseBtn.addEventListener('click', () => {
+      if (video.paused) {
+        video.play();
+      } else {
+        video.pause();
+      }
+    });
+
+    // Toggle Subtitles
+    subtitlesBtn.addEventListener('click', () => {
+      const track = video.textTracks[0];
+      if (track.mode === "showing") {
+        track.mode = "hidden";
+      } else {
+        track.mode = "showing";
+      }
+    });
+
+    // Change Audio (example: cycle through audio tracks)
+    audioBtn.addEventListener('click', () => {
+      // Placeholder: actual implementation depends on multiple audio tracks
+      alert("Switching audio track (demo)");
+    });
+
+    // Fullscreen
+    fullscreenBtn.addEventListener('click', () => {
+      if (!document.fullscreenElement) {
+        video.requestFullscreen();
+      } else {
+        document.exitFullscreen();
+      }
+    });
+
+    // Settings
+    document.getElementById('settings').addEventListener('click', () => {
+      alert("Settings menu (demo)");
+    });
+  </script>
+</body>
+</html>
