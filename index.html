@@ -2,183 +2,181 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Cyber-Anime Elite Player</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Cinema Elite 16:9 Dedicated Player</title>
   <style>
     @import url('https://fonts.googleapis.com');
-
-    :root { 
-      --accent: #00f2ff; 
-      --neon-p: #ff00ff;
-      --bass: 0; 
-    }
+    :root { --accent: #00f2ff; --bass: 0; --rgb: 0px; }
     
     body { 
-      margin: 0; height: 100vh; display: flex; justify-content: center; align-items: center; 
-      background: #000; overflow: hidden; font-family: 'Rajdhani', sans-serif; color: #fff; 
+      margin: 0; height: 100vh; width: 100vw; background: #000; overflow: hidden; 
+      font-family: 'Rajdhani'; color: #fff; touch-action: none;
+      display: flex; justify-content: center; align-items: center;
     }
 
-    /* --- ANIMATION ENGINE --- */
-    .fx-canvas { position: absolute; inset: 0; z-index: -1; transform: scale(calc(1 + (var(--bass) * 0.05))); pointer-events: none; }
+    /* --- BACKGROUND CINEMA --- */
+    .bg-wrap { position: absolute; inset: 0; z-index: -5; transform: scale(calc(1.1 + var(--bass) * 0.1)); filter: blur(15px) brightness(calc(0.3 + var(--bass))); pointer-events: none; }
+    #bgv { width: 100%; height: 100%; object-fit: cover; }
+    
+    .fx-canvas { position: absolute; inset: 0; z-index: -1; pointer-events: none; }
     .layer { position: absolute; inset: 0; display: none; overflow: hidden; }
 
-    /* ANIME SUBTITLES */
-    #sub-wrap {
-      position: absolute; bottom: 20%; width: 100%; text-align: center;
-      pointer-events: none; z-index: 100;
-    }
-    .anime-sub {
-      display: inline-block; font-family: 'Noto Sans JP', sans-serif;
-      font-size: calc(2.5rem + (var(--bass) * 30px));
-      font-weight: 900; font-style: italic; color: #fff;
-      text-shadow: 0 0 10px var(--accent), 0 0 30px var(--accent), calc(var(--bass) * 10px) 0px 0px var(--neon-p);
-      transform: skewX(-15deg); transition: all 0.05s linear;
-    }
-
-    /* 13 ELITE ANIMATIONS CSS */
-    #grid {
-      background: linear-gradient(transparent 0%, var(--accent) 1%, transparent 2%), linear-gradient(90deg, transparent 0%, var(--accent) 1%, transparent 2%);
-      background-size: 60px 60px; width: 400vw; height: 400vh; top: -100vh; left: -150vw;
-      transform: perspective(400px) rotateX(60deg); animation: drive 2s linear infinite; opacity: 0.3;
-    }
-    @keyframes drive { from { background-position: 0 0; } to { background-position: 0 60px; } }
-
-    .petal { position: absolute; font-size: 28px; animation: fallRotate 5s linear forwards; color: #ffb7c5; }
-    #void { background: radial-gradient(circle at center, #1a0033 0%, #000 70%); }
-    .void-ring { position: absolute; border: 2px solid #5500ff; border-radius: 50%; top: 50%; left: 50%; transform: translate(-50%, -50%); animation: ringExp 3s infinite linear; }
-    .rain-trail { position: absolute; width: 2px; height: 150px; background: linear-gradient(transparent, var(--accent)); animation: simpleFall 1s linear forwards; }
-    #nebula { background: linear-gradient(45deg, #7000ff, #00f2ff, #ff0070); filter: blur(100px); opacity: 0.25; transform: scale(2) rotate(calc(var(--bass) * 20deg)); }
-    .hex { position: absolute; border: 2px solid var(--accent); background: rgba(0,242,255,0.1); clip-path: polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%); animation: floatUp 8s linear forwards; }
-    .lightning { position: absolute; background: #fff; box-shadow: 0 0 30px var(--accent); animation: flash 0.15s linear forwards; }
-    .dust { position: absolute; background: #fff; border-radius: 50%; box-shadow: 0 0 10px #fff; animation: simpleFall 3s linear forwards; }
-    .bubble { position: absolute; border: 1px solid #fff; border-radius: 50%; animation: rise 4s ease-in forwards; }
-    .firefly { position: absolute; width: 6px; height: 6px; background: #ffea00; border-radius: 50%; filter: blur(2px); box-shadow: 0 0 15px #ffea00; animation: wander 4s infinite alternate; }
-    #glitch { background: repeating-linear-gradient(0deg, rgba(255,255,255,0.05) 0px, transparent 2px); animation: shake 0.1s infinite; }
-    .bin { position: absolute; color: #0f0; font-family: monospace; animation: simpleFall 2s linear forwards; }
-    .flame { position: absolute; bottom: 0; width: 60px; height: 200px; background: linear-gradient(0deg, orange, #ff0000, transparent); filter: blur(20px); animation: rise 1s linear forwards; opacity: 0.5; }
-
-    @keyframes ringExp { from { width: 0; height: 0; opacity: 1; } to { width: 150vw; height: 150vw; opacity: 0; } }
-    @keyframes simpleFall { to { transform: translateY(110vh); } }
+    /* --- 15 ELITE ANIMATIONS --- */
+    #grid { background: linear-gradient(transparent 0%, var(--accent) 1%, transparent 2%), linear-gradient(90deg, transparent 0%, var(--accent) 1%, transparent 2%); background-size: 50px 50px; width: 200%; height: 200%; top: -50%; left: -50%; transform: perspective(400px) rotateX(65deg); animation: drive 2s linear infinite; opacity: 0.3; }
+    @keyframes drive { from { background-position: 0 0; } to { background-position: 0 50px; } }
+    .petal { position: absolute; font-size: 24px; animation: fallRot 5s linear forwards; }
+    .void-ring { position: absolute; border: 2px solid #5500ff; border-radius: 50%; top: 50%; left: 50%; transform: translate(-50%, -50%); animation: ringExp 2s infinite linear; }
+    .rain { position: absolute; width: 2px; height: 100px; background: linear-gradient(transparent, var(--accent)); animation: moveD 1.2s linear forwards; }
+    .flame { position: absolute; bottom: 0; width: 60px; height: 180px; background: linear-gradient(0deg, orange, transparent); filter: blur(20px); animation: rise 1s linear forwards; opacity: 0.6; }
+    #glitch { background: repeating-linear-gradient(0deg, rgba(0,255,255,0.1) 0px, transparent 2px); animation: shake 0.1s infinite; }
+    
+    @keyframes fallRot { 0% { transform: translateY(-10vh) rotate(0); opacity: 0; } 10% { opacity: 1; } 100% { transform: translateY(110vh) rotate(720deg); opacity: 0; } }
+    @keyframes ringExp { from { width: 0; height: 0; opacity: 1; } to { width: 120vw; height: 120vw; opacity: 0; } }
+    @keyframes moveD { to { transform: translateY(110vh); } }
     @keyframes rise { to { transform: translateY(-110vh); } }
-    @keyframes fallRotate { 0% { transform: translateY(-10vh) rotate(0deg); opacity: 0; } 100% { transform: translateY(110vh) rotate(720deg); opacity: 0; } }
-    @keyframes floatUp { from { transform: translateY(110vh) rotate(0deg); } to { transform: translateY(-20vh) rotate(360deg); } }
-    @keyframes flash { from { opacity: 1; height: 100vh; width: 2px; } to { opacity: 0; width: 20px; } }
-    @keyframes wander { from { transform: translate(0, 0); } to { transform: translate(100px, -100px); } }
-    @keyframes shake { 0% { transform: translate(0); } 50% { transform: translate(5px, -5px); } 100% { transform: translate(-5px, 5px); } }
+    @keyframes shake { 0% { transform: translate(0); } 50% { transform: translate(5px,-5px); } 100% { transform: translate(-5px,5px); } }
 
-    /* --- UI --- */
-    .player-wrap { 
-      width: 85vw; max-width: 1000px; aspect-ratio: 16/9; 
-      background: #000; border-radius: 24px; overflow: hidden; 
-      border: 2px solid rgba(0, 242, 255, 0.3); 
-      box-shadow: 0 0 50px #000, 0 0 calc(var(--bass) * 60px) var(--accent);
-      z-index: 10; display: flex; flex-direction: column; position: relative;
+    /* --- THE DEDICATED 16:9 PLAYER ARCHITECTURE --- */
+    #draggable-player { 
+      position: absolute; width: 90vw; max-width: 800px;
+      background: rgba(10, 10, 10, 0.9); border-radius: 16px; overflow: hidden; 
+      border: 1px solid rgba(0, 242, 255, 0.3); box-shadow: 0 25px 100px rgba(0,0,0,1); 
+      z-index: 20; display: flex; flex-direction: column;
+      left: 50%; top: 50%; transform: translate(-50%, -50%);
     }
-    video { flex: 1; width: 100%; height: 100%; object-fit: contain; }
-    .controls { display: flex; padding: 20px; background: rgba(0, 0, 0, 0.9); backdrop-filter: blur(20px); gap: 15px; justify-content: center; }
-    button { background: transparent; border: 2px solid var(--accent); color: var(--accent); padding: 12px 28px; border-radius: 50px; cursor: pointer; font-family: 'Orbitron'; font-size: 11px; letter-spacing: 2px; transition: 0.3s; }
-    button:hover { background: var(--accent); color: #000; box-shadow: 0 0 20px var(--accent); }
-    select { background: #111; border: 2px solid rgba(255,255,255,0.2); color: #fff; padding: 12px; border-radius: 12px; }
+
+    .drag-handle { 
+        height: 35px; background: rgba(0, 242, 255, 0.15); 
+        display: flex; justify-content: center; align-items: center; 
+        font-family: 'Orbitron'; font-size: 9px; letter-spacing: 4px; color: var(--accent); 
+        cursor: grab;
+    }
+
+    /* THE STRICT 16:9 VIDEO CONTAINER */
+    .video-viewport {
+        width: 100%;
+        aspect-ratio: 16 / 9; /* Video area is now locked to 16:9 */
+        background: #000;
+        position: relative;
+        overflow: hidden;
+    }
+    video#v { width: 100%; height: 100%; object-fit: cover; }
+
+    /* HOLOGRAPHIC SCANLINES (OVER VIDEO ONLY) */
+    .video-viewport::after {
+      content: ""; position: absolute; inset: 0; pointer-events: none;
+      background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 242, 255, 0.04) 50%);
+      background-size: 100% 4px; z-index: 5;
+    }
+
+    .controls-panel { 
+      display: flex; padding: 15px; background: #050505; gap: 10px; 
+      justify-content: center; align-items: center; border-top: 1px solid #1a1a1a;
+    }
+    
+    button, select { 
+      background: #111; border: 1px solid var(--accent); color: var(--accent); 
+      padding: 10px 18px; border-radius: 6px; font-size: 11px; 
+      font-family: 'Orbitron'; text-transform: uppercase; cursor: pointer;
+    }
+    button:hover { background: var(--accent); color: #000; }
+
+    #init-overlay { position: absolute; inset: 0; background: rgba(0,0,0,0.98); display: flex; justify-content: center; align-items: center; z-index: 1000; cursor: pointer; font-family: 'Orbitron'; color: var(--accent); }
   </style>
 </head>
 <body>
 
+  <div id="init-overlay" onclick="setup()">◈ INITIALIZE CINEMA CORE ◈</div>
+
+  <div class="bg-wrap"><video id="bgv" muted loop playsinline><source src="https://www.w3schools.com"></video></div>
+  
   <div class="fx-canvas">
-    <div class="layer" id="grid"></div>
-    <div class="layer" id="sakura"></div>
-    <div class="layer" id="void"></div>
-    <div class="layer" id="rain"></div>
-    <div class="layer" id="nebula"></div>
-    <div class="layer" id="hex"></div>
-    <div class="layer" id="storm"></div>
-    <div class="layer" id="stars"></div>
-    <div class="layer" id="sea"></div>
-    <div class="layer" id="flies"></div>
-    <div class="layer" id="glitch"></div>
-    <div class="layer" id="binary"></div>
-    <div class="layer" id="aura"></div>
+    <div class="layer" id="grid"></div><div class="layer" id="sakura"></div><div class="layer" id="void"></div>
+    <div class="layer" id="rain"></div><div class="layer" id="nebula"></div><div class="layer" id="hex"></div>
+    <div class="layer" id="storm"></div><div class="layer" id="stars"></div><div class="layer" id="sea"></div>
+    <div class="layer" id="flies"></div><div class="layer" id="glitch"></div><div class="layer" id="binary"></div>
+    <div class="layer" id="aura"></div><div class="layer" id="solar"></div><div class="layer" id="ghost"></div>
   </div>
 
-  <div class="player-wrap">
-    <div id="sub-wrap"></div>
-    <video id="v" src="https://www.w3schools.com" crossorigin="anonymous" loop></video>
-    <div class="controls">
-      <button onclick="startEngine(); v.paused ? v.play() : v.pause()">◈ ACTION</button>
-      <button onclick="v.requestFullscreen()">⛶ FULLVIEW</button>
+  <div id="draggable-player">
+    <div class="drag-handle" id="handle">TERMINAL: DRAG TO REPOSITION</div>
+    
+    <div class="video-viewport">
+        <video id="v" loop playsinline crossorigin="anonymous"><source src="https://www.w3schools.com"></video>
+    </div>
+
+    <div class="controls-panel">
+      <button onclick="toggle()">PLAY / PAUSE</button>
       <select onchange="setFX(this.value)">
-        <option value="">-- Choose Mode --</option>
-        <option value="grid">1. Chrono-Grid</option>
-        <option value="sakura">2. Sakura Drift</option>
-        <option value="void">3. Domain Expansion</option>
-        <option value="rain">4. Cyber-Rain</option>
-        <option value="nebula">5. Prismatic Nebula</option>
-        <option value="hex">6. Quantum Hex</option>
-        <option value="storm">7. Electric Storm</option>
-        <option value="stars">8. Stardust Fall</option>
-        <option value="sea">9. Deep Sea Bubbles</option>
-        <option value="flies">10. Firefly Sanctuary</option>
-        <option value="glitch">11. Neural Glitch</option>
-        <option value="binary">12. Binary Flow</option>
-        <option value="aura">13. Saiyan Aura</option>
+        <option value="">AESTHETIC: OFF</option>
+        <option value="grid">01. 3D Grid</option><option value="sakura">02. Sakura</option><option value="void">03. Infinite Void</option>
+        <option value="rain">04. Cyber-Rain</option><option value="nebula">05. Nebula</option><option value="hex">06. Quantum Hex</option>
+        <option value="storm">07. Storm</option><option value="stars">08. Stardust</option><option value="sea">09. Abyssal</option>
+        <option value="flies">10. Fireflies</option><option value="glitch">11. Glitch</option><option value="binary">12. Binary</option>
+        <option value="aura">13. God Aura</option><option value="solar">14. Solar Flare</option><option value="ghost">15. Ghost Trails</option>
       </select>
     </div>
   </div>
 
   <script>
-    const v = document.getElementById('v');
-    const subWrap = document.getElementById('sub-wrap');
-    const layers = document.querySelectorAll('.layer');
+    const v = document.getElementById('v'), bgv = document.getElementById('bgv'), layers = document.querySelectorAll('.layer'), player = document.getElementById('draggable-player'), handle = document.getElementById('handle');
     let aCtx, analyzer, data, loops = [];
 
-    const mockSubs = [
-      { t: 1, txt: "LIMIT BREAK ACTIVE!" },
-      { t: 5, txt: "DOMAIN EXPANSION: INFINITE VOID" },
-      { t: 10, txt: "POWER LEVEL OVER 9000!!" }
-    ];
-
-    v.ontimeupdate = () => {
-      const active = mockSubs.find(s => v.currentTime >= s.t && v.currentTime < s.t + 3);
-      subWrap.innerHTML = active ? `<span class="anime-sub">${active.txt}</span>` : "";
+    // --- UNIVERSAL DRAG ENGINE ---
+    let isMoving = false, posX = 0, posY = 0;
+    handle.onpointerdown = (e) => {
+        isMoving = true;
+        player.style.transform = 'none';
+        posX = e.clientX - player.offsetLeft;
+        posY = e.clientY - player.offsetTop;
+        handle.setPointerCapture(e.pointerId);
     };
+    handle.onpointermove = (e) => {
+        if (!isMoving) return;
+        player.style.left = (e.clientX - posX) + 'px';
+        player.style.top = (e.clientY - posY) + 'px';
+    };
+    handle.onpointerup = () => isMoving = false;
 
-    function startEngine() {
-      if (aCtx) { aCtx.resume(); return; }
+    function toggle() { v.paused ? (v.play(), bgv.play()) : (v.pause(), bgv.pause()); }
+    function setup() { document.getElementById('init-overlay').style.display='none'; v.play(); bgv.play(); startAudio(); }
+    
+    function startAudio() {
+      if (aCtx) return;
       aCtx = new (AudioContext || webkitAudioContext)();
       analyzer = aCtx.createAnalyser();
       const source = aCtx.createMediaElementSource(v);
       source.connect(analyzer); analyzer.connect(aCtx.destination);
-      analyzer.fftSize = 64;
-      data = new Uint8Array(analyzer.frequencyBinCount);
+      analyzer.fftSize = 64; data = new Uint8Array(analyzer.frequencyBinCount);
       const tick = () => {
-        requestAnimationFrame(tick);
-        analyzer.getByteFrequencyData(data);
-        document.documentElement.style.setProperty('--bass', data[0] / 255);
+        requestAnimationFrame(tick); analyzer.getByteFrequencyData(data);
+        document.documentElement.style.setProperty('--bass', data / 255);
       };
       tick();
     }
 
     function setFX(id) {
       loops.forEach(clearInterval); loops = [];
-      layers.forEach(l => { l.style.display = 'none'; l.innerHTML = ''; });
+      layers.forEach(l => { l.style.display='none'; l.innerHTML=''; });
       if(!id) return;
-      const el = document.getElementById(id); el.style.display = 'block';
-
+      const el = document.getElementById(id); el.style.display='block';
+      
       const spawn = (html, time) => loops.push(setInterval(() => {
         const d = document.createElement('div'); d.innerHTML = html;
         const c = d.firstChild; c.style.left = Math.random()*100+'vw';
-        el.appendChild(c); setTimeout(() => c.remove(), 5000);
+        el.appendChild(c); setTimeout(() => c.remove(), 4000);
       }, time));
 
-      if(id==='sakura') spawn('<div class="petal">🌸</div>', 300);
-      if(id==='rain') spawn('<div class="rain-trail"></div>', 60);
-      if(id==='void') spawn('<div class="void-ring"></div>', 600);
-      if(id==='storm') spawn('<div class="lightning"></div>', 400);
-      if(id==='stars') spawn('<div class="dust" style="width:5px;height:5px;"></div>', 100);
-      if(id==='sea') spawn('<div class="bubble" style="width:25px;height:25px;bottom:-30px;"></div>', 300);
-      if(id==='binary') spawn(`<div class="bin">${Math.round(Math.random())}</div>`, 120);
-      if(id==='hex') spawn('<div class="hex" style="width:70px;height:70px;"></div>', 500);
-      if(id==='aura') spawn('<div class="flame" style="left:50vw;transform:translateX(-50%);"></div>', 100);
-      if(id==='flies') { for(let i=0; i<35; i++){ const f=document.createElement('div'); f.className='firefly'; f.style.left=Math.random()*100+'vw'; f.style.top=Math.random()*100+'vh'; el.appendChild(f); }}
+      if(id==='sakura') spawn('<div class="petal">🌸</div>', 400);
+      if(id==='rain') spawn('<div class="rain" style="position:absolute;width:2px;height:100px;background:var(--accent);animation:moveD 1s linear forwards"></div>', 100);
+      if(id==='void') spawn('<div class="void-ring"></div>', 800);
+      if(id==='hex') spawn('<div class="hex" style="width:50px;height:50px;position:absolute;border:1px solid var(--accent);clip-path:polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%);animation:rise 5s linear forwards"></div>', 500);
+      if(id==='storm') spawn('<div class="bolt" style="position:absolute;background:#fff;width:2px;height:100vh;animation:shake 0.1s linear"></div>', 450);
+      if(id==='stars') spawn('<div class="dust" style="position:absolute;background:#fff;width:3px;height:3px;border-radius:50%;animation:moveD 3s linear forwards"></div>', 150);
+      if(id==='binary') spawn(`<div style="position:absolute;color:#0f0;font-family:monospace;animation:moveD 2s linear forwards">${Math.round(Math.random())}</div>`, 150);
+      if(id==='aura') spawn('<div class="flame" style="left:50vw;transform:translateX(-50%)"></div>', 150);
+      if(id==='solar') el.innerHTML = '<div class="flare" style="position:absolute;inset:0;background:radial-gradient(circle,#ffaa0022,transparent);animation:shake 0.2s infinite"></div>';
+      if(id==='flies') { for(let i=0;i<25;i++){ const f=document.createElement('div');f.style.cssText=`position:absolute;width:4px;height:4px;background:#ff0;left:${Math.random()*100}vw;top:${Math.random()*100}vh;filter:blur(2px);animation:shake 3s infinite alternate`;el.appendChild(f); }}
     }
   </script>
 </body>
