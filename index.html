@@ -1,183 +1,376 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Cinema Elite 16:9 Dedicated Player</title>
-  <style>
-    @import url('https://fonts.googleapis.com');
-    :root { --accent: #00f2ff; --bass: 0; --rgb: 0px; }
-    
-    body { 
-      margin: 0; height: 100vh; width: 100vw; background: #000; overflow: hidden; 
-      font-family: 'Rajdhani'; color: #fff; touch-action: none;
-      display: flex; justify-content: center; align-items: center;
-    }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Shadowed Tomb</title>
 
-    /* --- BACKGROUND CINEMA --- */
-    .bg-wrap { position: absolute; inset: 0; z-index: -5; transform: scale(calc(1.1 + var(--bass) * 0.1)); filter: blur(15px) brightness(calc(0.3 + var(--bass))); pointer-events: none; }
-    #bgv { width: 100%; height: 100%; object-fit: cover; }
-    
-    .fx-canvas { position: absolute; inset: 0; z-index: -1; pointer-events: none; }
-    .layer { position: absolute; inset: 0; display: none; overflow: hidden; }
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;800&family=Orbitron:wght@500;700&display=swap" rel="stylesheet">
 
-    /* --- 15 ELITE ANIMATIONS --- */
-    #grid { background: linear-gradient(transparent 0%, var(--accent) 1%, transparent 2%), linear-gradient(90deg, transparent 0%, var(--accent) 1%, transparent 2%); background-size: 50px 50px; width: 200%; height: 200%; top: -50%; left: -50%; transform: perspective(400px) rotateX(65deg); animation: drive 2s linear infinite; opacity: 0.3; }
-    @keyframes drive { from { background-position: 0 0; } to { background-position: 0 50px; } }
-    .petal { position: absolute; font-size: 24px; animation: fallRot 5s linear forwards; }
-    .void-ring { position: absolute; border: 2px solid #5500ff; border-radius: 50%; top: 50%; left: 50%; transform: translate(-50%, -50%); animation: ringExp 2s infinite linear; }
-    .rain { position: absolute; width: 2px; height: 100px; background: linear-gradient(transparent, var(--accent)); animation: moveD 1.2s linear forwards; }
-    .flame { position: absolute; bottom: 0; width: 60px; height: 180px; background: linear-gradient(0deg, orange, transparent); filter: blur(20px); animation: rise 1s linear forwards; opacity: 0.6; }
-    #glitch { background: repeating-linear-gradient(0deg, rgba(0,255,255,0.1) 0px, transparent 2px); animation: shake 0.1s infinite; }
-    
-    @keyframes fallRot { 0% { transform: translateY(-10vh) rotate(0); opacity: 0; } 10% { opacity: 1; } 100% { transform: translateY(110vh) rotate(720deg); opacity: 0; } }
-    @keyframes ringExp { from { width: 0; height: 0; opacity: 1; } to { width: 120vw; height: 120vw; opacity: 0; } }
-    @keyframes moveD { to { transform: translateY(110vh); } }
-    @keyframes rise { to { transform: translateY(-110vh); } }
-    @keyframes shake { 0% { transform: translate(0); } 50% { transform: translate(5px,-5px); } 100% { transform: translate(-5px,5px); } }
+<style>
+:root{
+  --accent:#e50914;
+}
 
-    /* --- THE DEDICATED 16:9 PLAYER ARCHITECTURE --- */
-    #draggable-player { 
-      position: absolute; width: 90vw; max-width: 800px;
-      background: rgba(10, 10, 10, 0.9); border-radius: 16px; overflow: hidden; 
-      border: 1px solid rgba(0, 242, 255, 0.3); box-shadow: 0 25px 100px rgba(0,0,0,1); 
-      z-index: 20; display: flex; flex-direction: column;
-      left: 50%; top: 50%; transform: translate(-50%, -50%);
-    }
+html,body{
+  margin:0;
+  padding:0;
+  background:#000;
+  height:100%;
+  overflow:auto;
+  font-family:'Montserrat',sans-serif;
+  color:white;
+}
 
-    .drag-handle { 
-        height: 35px; background: rgba(0, 242, 255, 0.15); 
-        display: flex; justify-content: center; align-items: center; 
-        font-family: 'Orbitron'; font-size: 9px; letter-spacing: 4px; color: var(--accent); 
-        cursor: grab;
-    }
+/* ================= NAVBAR ================= */
 
-    /* THE STRICT 16:9 VIDEO CONTAINER */
-    .video-viewport {
-        width: 100%;
-        aspect-ratio: 16 / 9; /* Video area is now locked to 16:9 */
-        background: #000;
-        position: relative;
-        overflow: hidden;
-    }
-    video#v { width: 100%; height: 100%; object-fit: cover; }
+.navbar{
+  position:fixed;
+  top:0;
+  left:0;
+  right:0;
+  height:70px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:0 50px;
+  background:linear-gradient(to bottom, rgba(0,0,0,0.85), transparent);
+  transition:background 0.4s ease;
+  z-index:20;
+}
 
-    /* HOLOGRAPHIC SCANLINES (OVER VIDEO ONLY) */
-    .video-viewport::after {
-      content: ""; position: absolute; inset: 0; pointer-events: none;
-      background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 242, 255, 0.04) 50%);
-      background-size: 100% 4px; z-index: 5;
-    }
+.navbar.scrolled{
+  background:rgba(0,0,0,0.95);
+}
 
-    .controls-panel { 
-      display: flex; padding: 15px; background: #050505; gap: 10px; 
-      justify-content: center; align-items: center; border-top: 1px solid #1a1a1a;
-    }
-    
-    button, select { 
-      background: #111; border: 1px solid var(--accent); color: var(--accent); 
-      padding: 10px 18px; border-radius: 6px; font-size: 11px; 
-      font-family: 'Orbitron'; text-transform: uppercase; cursor: pointer;
-    }
-    button:hover { background: var(--accent); color: #000; }
+.nav-left{
+  font-family:'Orbitron',sans-serif;
+  font-size:22px;
+  letter-spacing:3px;
+  color:var(--accent);
+  cursor:pointer;
+  position:relative;
+}
 
-    #init-overlay { position: absolute; inset: 0; background: rgba(0,0,0,0.98); display: flex; justify-content: center; align-items: center; z-index: 1000; cursor: pointer; font-family: 'Orbitron'; color: var(--accent); }
-  </style>
+/* Netflix underline hover animation */
+.nav-left::after{
+  content:"";
+  position:absolute;
+  left:0;
+  bottom:-6px;
+  width:0%;
+  height:2px;
+  background:var(--accent);
+  transition:width 0.3s ease;
+}
+
+.nav-left:hover::after{
+  width:100%;
+}
+
+/* ================= INTRO ================= */
+
+#intro{
+  position:fixed;
+  inset:0;
+  background:#000;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  flex-direction:column;
+  z-index:100;
+  animation:introFade 3s forwards;
+}
+
+#intro h1{
+  font-family:'Orbitron',sans-serif;
+  font-size:60px;
+  letter-spacing:10px;
+  margin:0;
+  opacity:0;
+  animation:titleFade 1.5s forwards;
+}
+
+#intro .line{
+  width:0;
+  height:3px;
+  background:var(--accent);
+  margin-top:20px;
+  animation:lineExpand 1.5s forwards;
+}
+
+@keyframes titleFade{to{opacity:1;}}
+@keyframes lineExpand{to{width:280px;}}
+@keyframes introFade{
+  0%{opacity:1;}
+  85%{opacity:1;}
+  100%{opacity:0; visibility:hidden;}
+}
+
+/* ================= BACKGROUND ================= */
+
+#bg{
+  position:fixed;
+  inset:0;
+  z-index:0;
+}
+
+/* ================= PLAYER ================= */
+
+#player{
+  position:absolute;
+  width:90vw;
+  max-width:1100px;
+
+  background:rgba(20,20,20,0.55);
+  backdrop-filter:blur(20px) saturate(120%);
+  border-radius:20px;
+  overflow:hidden;
+
+  box-shadow:0 80px 200px rgba(0,0,0,0.95);
+
+  z-index:10;
+  border:1px solid rgba(255,255,255,0.08);
+  transition:all 0.4s ease;
+}
+
+/* MINI MODE */
+#player.mini{
+  width:320px;
+  height:180px;
+  bottom:20px;
+  right:20px;
+  top:auto !important;
+  left:auto !important;
+  border-radius:12px;
+}
+
+/* Header */
+.header{
+  height:65px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:0 30px;
+  background:linear-gradient(to bottom, rgba(0,0,0,0.8), transparent);
+  cursor:grab;
+}
+
+.header span{
+  font-family:'Orbitron',sans-serif;
+  font-size:15px;
+  letter-spacing:2px;
+}
+
+/* Video */
+.viewport{
+  aspect-ratio:16/9;
+  background:#000;
+}
+
+video{
+  width:100%;
+  height:100%;
+  object-fit:contain;
+}
+
+/* Controls */
+.controls{
+  padding:18px 30px;
+  background:rgba(0,0,0,0.6);
+  display:flex;
+  gap:16px;
+  align-items:center;
+  transition:opacity 0.3s ease;
+}
+
+.controls.hidden{
+  opacity:0;
+  pointer-events:none;
+}
+
+button{
+  background:rgba(255,255,255,0.08);
+  color:white;
+  border:none;
+  padding:10px 18px;
+  border-radius:8px;
+  cursor:pointer;
+  font-size:13px;
+  transition:0.2s ease;
+}
+
+button:hover{
+  background:var(--accent);
+  box-shadow:0 0 14px rgba(229,9,20,0.6);
+}
+
+.progress-container{
+  height:6px;
+  background:rgba(255,255,255,0.15);
+  cursor:pointer;
+}
+
+.progress{
+  height:100%;
+  width:0%;
+  background:var(--accent);
+}
+</style>
 </head>
 <body>
 
-  <div id="init-overlay" onclick="setup()">◈ INITIALIZE CINEMA CORE ◈</div>
+<div class="navbar" id="navbar">
+  <div class="nav-left">SHADOWED TOMB</div>
+</div>
 
-  <div class="bg-wrap"><video id="bgv" muted loop playsinline><source src="https://www.w3schools.com"></video></div>
-  
-  <div class="fx-canvas">
-    <div class="layer" id="grid"></div><div class="layer" id="sakura"></div><div class="layer" id="void"></div>
-    <div class="layer" id="rain"></div><div class="layer" id="nebula"></div><div class="layer" id="hex"></div>
-    <div class="layer" id="storm"></div><div class="layer" id="stars"></div><div class="layer" id="sea"></div>
-    <div class="layer" id="flies"></div><div class="layer" id="glitch"></div><div class="layer" id="binary"></div>
-    <div class="layer" id="aura"></div><div class="layer" id="solar"></div><div class="layer" id="ghost"></div>
-  </div>
+<div id="intro">
+  <h1>SHADOWED TOMB</h1>
+  <div class="line"></div>
+</div>
 
-  <div id="draggable-player">
-    <div class="drag-handle" id="handle">TERMINAL: DRAG TO REPOSITION</div>
-    
-    <div class="video-viewport">
-        <video id="v" loop playsinline crossorigin="anonymous"><source src="https://www.w3schools.com"></video>
-    </div>
+<canvas id="bg"></canvas>
 
-    <div class="controls-panel">
-      <button onclick="toggle()">PLAY / PAUSE</button>
-      <select onchange="setFX(this.value)">
-        <option value="">AESTHETIC: OFF</option>
-        <option value="grid">01. 3D Grid</option><option value="sakura">02. Sakura</option><option value="void">03. Infinite Void</option>
-        <option value="rain">04. Cyber-Rain</option><option value="nebula">05. Nebula</option><option value="hex">06. Quantum Hex</option>
-        <option value="storm">07. Storm</option><option value="stars">08. Stardust</option><option value="sea">09. Abyssal</option>
-        <option value="flies">10. Fireflies</option><option value="glitch">11. Glitch</option><option value="binary">12. Binary</option>
-        <option value="aura">13. God Aura</option><option value="solar">14. Solar Flare</option><option value="ghost">15. Ghost Trails</option>
-      </select>
+<div id="player">
+  <div class="header" id="dragHandle">
+    <span>STREAM</span>
+    <div>
+      <button onclick="toggleMini()">Mini</button>
+      <button onclick="goFullscreen()">Fullscreen</button>
     </div>
   </div>
 
-  <script>
-    const v = document.getElementById('v'), bgv = document.getElementById('bgv'), layers = document.querySelectorAll('.layer'), player = document.getElementById('draggable-player'), handle = document.getElementById('handle');
-    let aCtx, analyzer, data, loops = [];
+  <div class="viewport" id="tapArea">
+    <video id="video" controls playsinline></video>
+  </div>
 
-    // --- UNIVERSAL DRAG ENGINE ---
-    let isMoving = false, posX = 0, posY = 0;
-    handle.onpointerdown = (e) => {
-        isMoving = true;
-        player.style.transform = 'none';
-        posX = e.clientX - player.offsetLeft;
-        posY = e.clientY - player.offsetTop;
-        handle.setPointerCapture(e.pointerId);
-    };
-    handle.onpointermove = (e) => {
-        if (!isMoving) return;
-        player.style.left = (e.clientX - posX) + 'px';
-        player.style.top = (e.clientY - posY) + 'px';
-    };
-    handle.onpointerup = () => isMoving = false;
+  <div class="controls" id="controls">
+    <button onclick="toggle()">Play / Pause</button>
+  </div>
 
-    function toggle() { v.paused ? (v.play(), bgv.play()) : (v.pause(), bgv.pause()); }
-    function setup() { document.getElementById('init-overlay').style.display='none'; v.play(); bgv.play(); startAudio(); }
-    
-    function startAudio() {
-      if (aCtx) return;
-      aCtx = new (AudioContext || webkitAudioContext)();
-      analyzer = aCtx.createAnalyser();
-      const source = aCtx.createMediaElementSource(v);
-      source.connect(analyzer); analyzer.connect(aCtx.destination);
-      analyzer.fftSize = 64; data = new Uint8Array(analyzer.frequencyBinCount);
-      const tick = () => {
-        requestAnimationFrame(tick); analyzer.getByteFrequencyData(data);
-        document.documentElement.style.setProperty('--bass', data / 255);
-      };
-      tick();
+  <div class="progress-container" id="progressContainer">
+    <div class="progress" id="progressBar"></div>
+  </div>
+</div>
+
+<script>
+
+/* NAV SCROLL FADE */
+window.addEventListener("scroll",()=>{
+  const nav=document.getElementById("navbar");
+  if(window.scrollY>20){
+    nav.classList.add("scrolled");
+  }else{
+    nav.classList.remove("scrolled");
+  }
+});
+
+/* MINI MODE */
+function toggleMini(){
+  const player=document.getElementById("player");
+  player.classList.toggle("mini");
+}
+
+/* STREAM */
+const video=document.getElementById("video");
+const params=new URLSearchParams(window.location.search);
+const streamUrl=params.get("video");
+if(streamUrl) video.src=streamUrl;
+
+/* PROGRESS */
+const progressBar=document.getElementById("progressBar");
+video.addEventListener("timeupdate",()=>{
+  if(video.duration){
+    progressBar.style.width=(video.currentTime/video.duration*100)+"%";
+  }
+});
+
+/* DRAG FIX */
+const player=document.getElementById("player");
+const handle=document.getElementById("dragHandle");
+
+let isDragging=false;
+let offsetX=0, offsetY=0;
+
+handle.addEventListener("pointerdown",e=>{
+  if(player.classList.contains("mini")) return;
+  isDragging=true;
+  const rect=player.getBoundingClientRect();
+  offsetX=e.clientX - rect.left;
+  offsetY=e.clientY - rect.top;
+  handle.setPointerCapture(e.pointerId);
+});
+
+handle.addEventListener("pointermove",e=>{
+  if(!isDragging) return;
+
+  let newLeft=e.clientX - offsetX;
+  let newTop=e.clientY - offsetY;
+
+  newLeft=Math.max(0,Math.min(window.innerWidth-player.offsetWidth,newLeft));
+  newTop=Math.max(70,Math.min(window.innerHeight-player.offsetHeight,newTop));
+
+  player.style.left=newLeft+"px";
+  player.style.top=newTop+"px";
+});
+
+handle.addEventListener("pointerup",()=>isDragging=false);
+
+/* BACKGROUND */
+const canvas=document.getElementById("bg");
+const ctx=canvas.getContext("2d");
+let W,H;
+
+function resize(){
+  W=canvas.width=window.innerWidth;
+  H=canvas.height=window.innerHeight;
+}
+resize();
+window.addEventListener("resize",resize);
+
+let stars=[];
+for(let i=0;i<250;i++){
+  stars.push({
+    x:Math.random()*W,
+    y:Math.random()*H,
+    z:Math.random()*1.5+0.5
+  });
+}
+
+function renderBG(){
+  requestAnimationFrame(renderBG);
+
+  ctx.fillStyle="rgba(0,0,0,0.12)";
+  ctx.fillRect(0,0,W,H);
+
+  stars.forEach(s=>{
+    ctx.fillStyle="rgba(255,255,255,"+(0.3*s.z)+")";
+    ctx.fillRect(s.x,s.y,2*s.z,2*s.z);
+    s.y+=0.08*s.z;
+    if(s.y>H){
+      s.y=0;
+      s.x=Math.random()*W;
     }
+  });
 
-    function setFX(id) {
-      loops.forEach(clearInterval); loops = [];
-      layers.forEach(l => { l.style.display='none'; l.innerHTML=''; });
-      if(!id) return;
-      const el = document.getElementById(id); el.style.display='block';
-      
-      const spawn = (html, time) => loops.push(setInterval(() => {
-        const d = document.createElement('div'); d.innerHTML = html;
-        const c = d.firstChild; c.style.left = Math.random()*100+'vw';
-        el.appendChild(c); setTimeout(() => c.remove(), 4000);
-      }, time));
+  ctx.strokeStyle="rgba(229,9,20,0.25)";
+  ctx.beginPath();
+  for(let x=0;x<W;x++){
+    let y=H*0.75+Math.sin(x*0.01+Date.now()*0.0007)*25;
+    ctx.lineTo(x,y);
+  }
+  ctx.stroke();
+}
+renderBG();
 
-      if(id==='sakura') spawn('<div class="petal">🌸</div>', 400);
-      if(id==='rain') spawn('<div class="rain" style="position:absolute;width:2px;height:100px;background:var(--accent);animation:moveD 1s linear forwards"></div>', 100);
-      if(id==='void') spawn('<div class="void-ring"></div>', 800);
-      if(id==='hex') spawn('<div class="hex" style="width:50px;height:50px;position:absolute;border:1px solid var(--accent);clip-path:polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%);animation:rise 5s linear forwards"></div>', 500);
-      if(id==='storm') spawn('<div class="bolt" style="position:absolute;background:#fff;width:2px;height:100vh;animation:shake 0.1s linear"></div>', 450);
-      if(id==='stars') spawn('<div class="dust" style="position:absolute;background:#fff;width:3px;height:3px;border-radius:50%;animation:moveD 3s linear forwards"></div>', 150);
-      if(id==='binary') spawn(`<div style="position:absolute;color:#0f0;font-family:monospace;animation:moveD 2s linear forwards">${Math.round(Math.random())}</div>`, 150);
-      if(id==='aura') spawn('<div class="flame" style="left:50vw;transform:translateX(-50%)"></div>', 150);
-      if(id==='solar') el.innerHTML = '<div class="flare" style="position:absolute;inset:0;background:radial-gradient(circle,#ffaa0022,transparent);animation:shake 0.2s infinite"></div>';
-      if(id==='flies') { for(let i=0;i<25;i++){ const f=document.createElement('div');f.style.cssText=`position:absolute;width:4px;height:4px;background:#ff0;left:${Math.random()*100}vw;top:${Math.random()*100}vh;filter:blur(2px);animation:shake 3s infinite alternate`;el.appendChild(f); }}
-    }
-  </script>
+function toggle(){
+  video.paused?video.play():video.pause();
+}
+
+function goFullscreen(){
+  video.requestFullscreen();
+}
+
+</script>
 </body>
 </html>
